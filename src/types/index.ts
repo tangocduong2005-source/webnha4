@@ -33,6 +33,9 @@ export interface Product {
   tags: string[]; // Ví dụ: "giải độc", "mát gan", "trị mất ngủ"
   isFeatured: boolean;
   isNew: boolean;
+  isBestSeller?: boolean;
+  precautions?: string; // Lưu ý & Đối tượng dùng
+  preservation?: string; // Hướng dẫn bảo quản
   createdAt: string;
 }
 

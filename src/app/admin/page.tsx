@@ -4,13 +4,12 @@ import { useState, useEffect } from "react";
 import {
   DollarSign,
   ShoppingBag,
-  Package,
-  Users,
+  Leaf,
+  Clock,
   TrendingUp,
   ArrowRight,
-  Leaf,
+  Phone,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { orders as initialOrders } from "@/data/orders";
 import { products as initialProducts } from "@/data/products";
 import { Order, Product } from "@/types";
@@ -19,12 +18,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const statusMap: Record<string, { label: string; color: string }> = {
-  pending: { label: "Chờ xác nhận", color: "bg-yellow-100 text-yellow-800" },
-  confirmed: { label: "Đã xác nhận", color: "bg-blue-100 text-blue-800" },
-  processing: { label: "Đang xử lý", color: "bg-purple-100 text-purple-800" },
-  shipping: { label: "Đang giao", color: "bg-orange-100 text-orange-800" },
-  delivered: { label: "Đã giao", color: "bg-green-100 text-green-800" },
-  cancelled: { label: "Đã hủy", color: "bg-red-100 text-red-800" },
+  pending: { label: "Chờ xác nhận", color: "bg-amber-100 text-amber-800 border-amber-200" },
+  confirmed: { label: "Đã xác nhận", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  processing: { label: "Đang bốc thuốc", color: "bg-purple-100 text-purple-800 border-purple-200" },
+  shipping: { label: "Đang giao", color: "bg-orange-100 text-orange-800 border-orange-200" },
+  delivered: { label: "Đã giao", color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
+  cancelled: { label: "Đã hủy", color: "bg-rose-100 text-rose-800 border-rose-200" },
 };
 
 export default function AdminDashboard() {
@@ -46,7 +45,7 @@ export default function AdminDashboard() {
   const totalRevenue = orderList.reduce((sum, o) => sum + o.total, 0);
   const totalOrders = orderList.length;
   const totalProducts = productList.length;
-  const totalStock = productList.reduce((sum, p) => sum + p.stock, 0);
+  const pendingOrders = orderList.filter((o) => o.status === "pending").length;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -59,189 +58,221 @@ export default function AdminDashboard() {
     {
       title: "Tổng doanh thu",
       value: formatPrice(totalRevenue),
-      change: "+15.2% tháng này",
+      subtext: "+18.4% so với tháng trước",
       trend: "up",
       icon: DollarSign,
-      color: "text-green-600 bg-green-50",
+      iconColor: "text-emerald-700",
+      bgColor: "bg-emerald-50 border-emerald-200/60",
     },
     {
-      title: "Đơn đặt hàng",
+      title: "Tổng đơn hàng",
       value: `${totalOrders} đơn`,
-      change: `${orderList.filter((o) => o.status === "pending").length} đơn mới`,
-      trend: "up",
-      icon: ShoppingBag,
-      color: "text-blue-600 bg-blue-50",
-    },
-    {
-      title: "Bài thuốc & Dược liệu",
-      value: `${totalProducts} loại`,
-      change: `${totalStock} gói tồn kho`,
+      subtext: "Đã ghi nhận trên hệ thống",
       trend: "neutral",
-      icon: Package,
-      color: "text-purple-600 bg-purple-50",
+      icon: ShoppingBag,
+      iconColor: "text-blue-700",
+      bgColor: "bg-blue-50 border-blue-200/60",
     },
     {
-      title: "Khách hàng mua",
-      value: "186 người",
-      change: "+8 khách mới",
-      trend: "up",
-      icon: Users,
-      color: "text-orange-600 bg-orange-50",
+      title: "Số loại cây thuốc",
+      value: `${totalProducts} loại`,
+      subtext: `${productList.reduce((sum, p) => sum + p.stock, 0)} gói trong kho`,
+      trend: "neutral",
+      icon: Leaf,
+      iconColor: "text-purple-700",
+      bgColor: "bg-purple-50 border-purple-200/60",
+    },
+    {
+      title: "Đơn chờ xử lý",
+      value: `${pendingOrders} đơn`,
+      subtext: pendingOrders > 0 ? "Cần liên hệ khách xác nhận" : "Tất cả đơn đã được duyệt",
+      trend: pendingOrders > 0 ? "alert" : "good",
+      icon: Clock,
+      iconColor: "text-amber-700",
+      bgColor: "bg-amber-50 border-amber-200/60",
     },
   ];
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-heading text-3xl font-bold text-foreground">
-          Bảng Điều Khiển Cửa Hàng
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Tổng quan số liệu kinh doanh dược liệu Thảo Dược Xanh
-        </p>
+      {/* Title & Quick Actions */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-3xl font-extrabold text-stone-900 tracking-tight">
+            Bảng Điều Khiển Quản Trị
+          </h1>
+          <p className="text-stone-500 text-sm mt-1">
+            Tổng quan hiệu suất bán hàng & tình trạng tồn kho cây thuốc Nam
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link href="/admin/products">
+            <Button className="bg-emerald-800 hover:bg-emerald-900 text-white text-xs h-9 gap-1.5 rounded-xl shadow-xs">
+              <Leaf className="h-3.5 w-3.5" />
+              <span>Thêm Cây Thuốc</span>
+            </Button>
+          </Link>
+          <Link href="/admin/orders">
+            <Button variant="outline" className="text-xs h-9 gap-1.5 rounded-xl border-stone-300">
+              <ShoppingBag className="h-3.5 w-3.5" />
+              <span>Xem Đơn Hàng</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {/* Stats cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 4 Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {stats.map((stat) => (
-          <Card key={stat.title} className="hover-lift border shadow-xs bg-white">
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div
-                  className={`h-10 w-10 rounded-xl flex items-center justify-center ${stat.color}`}
-                >
-                  <stat.icon className="h-5 w-5" />
-                </div>
-                {stat.trend === "up" && (
-                  <span className="flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                    <TrendingUp className="h-3 w-3" />
-                    {stat.change}
-                  </span>
-                )}
-                {stat.trend === "neutral" && (
-                  <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                    {stat.change}
-                  </span>
-                )}
-              </div>
-              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">
+          <div
+            key={stat.title}
+            className={`p-5 rounded-2xl border bg-white shadow-2xs hover:shadow-md transition-all duration-300 hover:-translate-y-1`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
                 {stat.title}
-              </p>
-            </CardContent>
-          </Card>
+              </span>
+              <div
+                className={`h-11 w-11 rounded-xl flex items-center justify-center border ${stat.bgColor} ${stat.iconColor}`}
+              >
+                <stat.icon className="h-5 w-5" />
+              </div>
+            </div>
+
+            <p className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
+              {stat.value}
+            </p>
+
+            <div className="mt-2 flex items-center gap-1.5 text-xs">
+              {stat.trend === "up" && (
+                <span className="text-emerald-700 font-bold flex items-center gap-0.5">
+                  <TrendingUp className="h-3 w-3" />
+                  {stat.subtext}
+                </span>
+              )}
+              {stat.trend === "alert" && (
+                <span className="text-amber-700 font-semibold bg-amber-100/70 px-2 py-0.5 rounded-md">
+                  ⚠ {stat.subtext}
+                </span>
+              )}
+              {stat.trend !== "up" && stat.trend !== "alert" && (
+                <span className="text-stone-500">{stat.subtext}</span>
+              )}
+            </div>
+          </div>
         ))}
       </div>
 
-      {/* Recent orders & Top products */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent orders */}
-        <Card className="border shadow-xs bg-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
+      {/* Recent orders & Top Herb products */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Recent orders column */}
+        <div className="lg:col-span-7 bg-white rounded-3xl p-6 border border-stone-200/80 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-stone-100">
             <div>
-              <CardTitle className="font-heading text-lg">
-                Đơn Hàng Vừa Đặt
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Cập nhật đơn hàng mới nhất của khách
-              </p>
+              <h2 className="font-heading text-lg font-bold text-stone-900">
+                Đơn Hàng Gần Đây
+              </h2>
+              <p className="text-xs text-stone-500">Các đơn mới đặt từ trang cửa hàng</p>
             </div>
             <Link href="/admin/orders">
-              <Button variant="ghost" size="sm" className="text-xs text-primary gap-1">
-                <span>Xem tất cả</span>
+              <Button variant="ghost" size="sm" className="text-xs text-emerald-800 hover:text-emerald-900 gap-1 font-semibold">
+                <span>Xem tất cả ({orderList.length})</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {orderList.slice(0, 5).map((order) => (
-                <div
-                  key={order.id}
-                  className="flex items-center justify-between p-3.5 rounded-xl bg-accent/20 border border-border/40 hover:bg-accent/30 transition-colors"
-                >
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-bold text-primary">
-                        {order.orderNumber}
-                      </span>
-                      <span className="text-xs font-semibold text-foreground">
-                        {order.customer.fullName}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {order.items.length} món • SĐT: {order.customer.phone}
-                    </p>
-                  </div>
-                  <div className="text-right space-y-1">
-                    <p className="text-sm font-bold text-primary">
-                      {formatPrice(order.total)}
-                    </p>
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] ${statusMap[order.status]?.color}`}
-                    >
-                      {statusMap[order.status]?.label}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Top products */}
-        <Card className="border shadow-xs bg-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <div className="space-y-3">
+            {orderList.slice(0, 5).map((order) => (
+              <div
+                key={order.id}
+                className="flex items-center justify-between p-4 rounded-2xl bg-stone-50 border border-stone-200/60 hover:border-emerald-700/30 transition-all hover:bg-stone-50/80"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-emerald-900 bg-emerald-100/60 px-2 py-0.5 rounded-md">
+                      {order.orderNumber}
+                    </span>
+                    <span className="text-sm font-bold text-stone-900">
+                      {order.customer.fullName}
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-500 flex items-center gap-2">
+                    <span>{order.items.length} bài thuốc</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <Phone className="h-3 w-3" />
+                      {order.customer.phone}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="text-right space-y-1.5">
+                  <p className="text-sm font-extrabold text-emerald-900">
+                    {formatPrice(order.total)}
+                  </p>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] font-semibold ${statusMap[order.status]?.color}`}
+                  >
+                    {statusMap[order.status]?.label}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Top Products column */}
+        <div className="lg:col-span-5 bg-white rounded-3xl p-6 border border-stone-200/80 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-stone-100">
             <div>
-              <CardTitle className="font-heading text-lg">
-                Cây Thuốc Bán Chạy & Tồn Kho
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Các loại dược liệu được quan tâm nhiều nhất
-              </p>
+              <h2 className="font-heading text-lg font-bold text-stone-900">
+                Cây Thuốc Tiêu Biểu
+              </h2>
+              <p className="text-xs text-stone-500">Theo dõi tồn kho & đánh giá</p>
             </div>
             <Link href="/admin/products">
-              <Button variant="ghost" size="sm" className="text-xs text-primary gap-1">
+              <Button variant="ghost" size="sm" className="text-xs text-emerald-800 hover:text-emerald-900 gap-1 font-semibold">
                 <span>Quản lý kho</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {productList.slice(0, 5).map((product, index) => (
-                <div
-                  key={product.id}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-accent/20 border border-border/40"
-                >
-                  <div className="h-10 w-10 rounded-lg bg-accent/50 flex items-center justify-center shrink-0 overflow-hidden border">
-                    {product.images?.[0] ? (
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Leaf className="h-5 w-5 text-primary/40" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate text-foreground">
-                      {product.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Tồn: <strong>{product.stock}</strong> gói • ⭐ {product.rating} ({product.reviewCount} đánh giá)
-                    </p>
-                  </div>
-                  <p className="text-sm font-bold text-primary">
-                    {formatPrice(product.price)}
+          </div>
+
+          <div className="space-y-3">
+            {productList.slice(0, 5).map((product) => (
+              <div
+                key={product.id}
+                className="flex items-center gap-3.5 p-3 rounded-2xl bg-stone-50 border border-stone-200/60"
+              >
+                <div className="h-12 w-12 rounded-xl bg-stone-200 flex items-center justify-center shrink-0 overflow-hidden border">
+                  {product.images?.[0] ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Leaf className="h-6 w-6 text-emerald-800/40" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold truncate text-stone-900">
+                    {product.name}
+                  </p>
+                  <p className="text-xs text-stone-500">
+                    Tồn: <strong className="text-stone-800">{product.stock}</strong> gói • ⭐ {product.rating}
                   </p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <p className="text-sm font-bold text-emerald-900">
+                  {formatPrice(product.price)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Package,
   FolderTree,
   ShoppingBag,
   Leaf,
   ArrowLeft,
   Menu,
+  Store,
+  Bell,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -17,23 +19,23 @@ import { useState } from "react";
 const sidebarLinks = [
   {
     href: "/admin",
-    label: "Dashboard",
+    label: "Tổng quan",
     icon: LayoutDashboard,
   },
   {
     href: "/admin/products",
-    label: "Sản phẩm",
-    icon: Package,
-  },
-  {
-    href: "/admin/categories",
-    label: "Danh mục",
-    icon: FolderTree,
+    label: "Cây thuốc & Bài thuốc",
+    icon: Leaf,
   },
   {
     href: "/admin/orders",
-    label: "Đơn hàng",
+    label: "Đơn đặt hàng",
     icon: ShoppingBag,
+  },
+  {
+    href: "/admin/categories",
+    label: "Danh mục dược liệu",
+    icon: FolderTree,
   },
 ];
 
@@ -46,96 +48,132 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-accent/30">
+    <div className="min-h-screen bg-stone-100/60 font-sans">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar SaaS Style */}
       <aside
-        className={`fixed left-0 top-0 h-full w-64 bg-[hsl(153,30%,12%)] text-white z-50 transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed left-0 top-0 h-full w-64 bg-stone-900 text-stone-300 border-r border-stone-800 z-50 transition-transform duration-300 flex flex-col lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-        <div className="p-5">
-          {/* Logo */}
-          <Link href="/admin" className="flex items-center gap-2 mb-8">
-            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-              <Leaf className="h-6 w-6 text-white" />
+        <div className="p-5 flex-1 flex flex-col">
+          {/* Brand Logo */}
+          <Link href="/admin" className="flex items-center gap-3 mb-8 px-1">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 flex items-center justify-center text-white shadow-md">
+              <Leaf className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="font-heading text-lg font-bold">Thảo Dược Xanh</h1>
-              <p className="text-[10px] text-white/50">Quản trị hệ thống</p>
+              <h1 className="font-heading text-base font-bold text-white tracking-wide">
+                Thảo Dược Xanh
+              </h1>
+              <p className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+                <Sparkles className="h-3 w-3" />
+                <span>SaaS Admin Portal</span>
+              </p>
             </div>
           </Link>
 
-          {/* Navigation */}
-          <nav className="space-y-1">
-            {sidebarLinks.map((link) => {
-              const isActive =
-                pathname === link.href ||
-                (link.href !== "/admin" && pathname.startsWith(link.href));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${isActive
-                      ? "bg-primary text-white font-medium"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
+          {/* Navigation Links */}
+          <div className="space-y-1">
+            <p className="px-3 text-[11px] font-semibold text-stone-500 uppercase tracking-wider mb-2">
+              Quản lý chính
+            </p>
+            <nav className="space-y-1">
+              {sidebarLinks.map((link) => {
+                const isActive =
+                  pathname === link.href ||
+                  (link.href !== "/admin" && pathname.startsWith(link.href));
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      isActive
+                        ? "bg-emerald-800 text-white shadow-sm"
+                        : "text-stone-400 hover:bg-stone-800/80 hover:text-stone-200"
                     }`}
-                >
-                  <link.icon className="h-4.5 w-4.5" />
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
+                  >
+                    <link.icon className={`h-4.5 w-4.5 ${isActive ? "text-emerald-300" : "text-stone-400"}`} />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
         </div>
 
-        {/* Back to store */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 border-t border-white/10">
+        {/* Bottom Profile & Link */}
+        <div className="p-4 border-t border-stone-800 space-y-2">
           <Link
             href="/"
-            className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
+            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-stone-800/60 hover:bg-stone-800 text-xs font-semibold text-stone-300 transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Về trang bán hàng
+            <span className="flex items-center gap-2">
+              <Store className="h-4 w-4 text-emerald-400" />
+              <span>Xem Web Bán Hàng</span>
+            </span>
+            <ArrowLeft className="h-3.5 w-3.5 rotate-180 text-stone-500" />
           </Link>
+
+          <div className="flex items-center gap-3 px-3.5 py-2">
+            <div className="h-8 w-8 rounded-full bg-emerald-700/50 border border-emerald-500/40 text-emerald-200 flex items-center justify-center font-bold text-xs">
+              AD
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-white truncate">Dược Sĩ Quản Trị</p>
+              <p className="text-[10px] text-stone-500">Chủ cửa hàng</p>
+            </div>
+          </div>
         </div>
       </aside>
 
-      {/* Main content */}
-      <div className="lg:ml-64">
+      {/* Main content wrapper */}
+      <div className="lg:ml-64 flex flex-col min-h-screen">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b">
-          <div className="flex items-center justify-between px-4 lg:px-8 py-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            <div className="hidden lg:block">
-              <h2 className="text-sm font-medium text-muted-foreground">
-                Admin Panel
-              </h2>
-            </div>
+        <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-stone-200 px-4 lg:px-8 py-3.5 shadow-2xs">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-                A
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden text-stone-700"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <div className="hidden sm:flex items-center gap-2 text-xs text-stone-500">
+                <span>Hệ thống:</span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  Đang hoạt động ổn định
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link href="/" target="_blank">
+                <Button variant="outline" size="sm" className="text-xs h-8 gap-1.5 border-stone-300 rounded-lg">
+                  <Store className="h-3.5 w-3.5 text-emerald-800" />
+                  <span>Mở Storefront</span>
+                </Button>
+              </Link>
+              <div className="h-8 w-8 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center border border-stone-200">
+                <Bell className="h-4 w-4" />
               </div>
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="p-4 lg:p-8">{children}</main>
+        <main className="p-4 sm:p-6 lg:p-8 flex-1">{children}</main>
       </div>
     </div>
   );
