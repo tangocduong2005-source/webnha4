@@ -1,3 +1,5 @@
+"use client";
+
 import HeroBanner from "@/components/storefront/HeroBanner";
 import CategorySection from "@/components/storefront/CategorySection";
 import FeaturedProducts from "@/components/storefront/FeaturedProducts";
