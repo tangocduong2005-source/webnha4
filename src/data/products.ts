@@ -166,7 +166,7 @@ export const reviews: Review[] = [
     userName: "Trần Mai Phương",
     rating: 5,
     comment:
-      "Dược liệu quý chất lượng cao, đúng gốc Khánh Hòa. Sắc uống vị đắng thanh sau đó ngọt hậu, rất yên tâm khi mua tại Thảo Dược Xanh.",
+      "Dược liệu quý chất lượng cao, đúng gốc Khánh Hòa. Sắc uống vị đắng thanh sau đó ngọt hậu, rất yên tâm khi mua tại Cây Thuốc Ông Han.",
     date: "2024-03-20",
   },
   {

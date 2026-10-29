@@ -28,8 +28,8 @@ const BANK_CONFIG = {
   bankId: "MB",
   bankName: "Ngân hàng Quân Đội (MB Bank)",
   accountNo: "0345678999",
-  accountName: "THAO DUOC XANH",
-  zaloPhone: "0987654321",
+  accountName: "CAY THUOC ONG HAN",
+  zaloPhone: "0964001203",
 };
 
 export default function CheckoutForm() {
@@ -82,9 +82,9 @@ export default function CheckoutForm() {
     const itemsList = ord.items
       .map((it) => `+ ${it.productName} (x${it.quantity})`)
       .join("\n");
-    return `Chào Thảo Dược Xanh, tôi vừa đặt đơn hàng:\n- Mã đơn: ${ord.orderNumber}\n- Người nhận: ${ord.customer.fullName} (${ord.customer.phone})\n- Địa chỉ: ${ord.customer.address}, ${ord.customer.city}\n- Cây thuốc:\n${itemsList}\n- Tổng tiền: ${formatPrice(ord.total)}\n- Hình thức: ${
+    return `Chào Cây Thuốc Ông Han, tôi vừa đặt đơn hàng:\n- Mã đơn: ${ord.orderNumber}\n- Người nhận: ${ord.customer.fullName} (${ord.customer.phone})\n- Địa chỉ: ${ord.customer.address}, ${ord.customer.city}\n- Cây thuốc:\n${itemsList}\n- Tổng tiền: ${formatPrice(ord.total)}\n- Hình thức: ${
       ord.paymentMethod === "bank_transfer" ? "Chuyển khoản VietQR" : "COD"
-    }\nNhờ shop kiểm tra và xác nhận đơn giúp tôi nhé!`;
+    }\nNhờ nhà thuốc kiểm tra và xác nhận đơn giúp tôi nhé!`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -190,7 +190,7 @@ export default function CheckoutForm() {
             Đặt Hàng Thành Công!
           </h2>
           <p className="text-muted-foreground max-w-md mx-auto text-sm leading-relaxed mb-4">
-            Cảm ơn quý khách <strong>{createdOrder.customer.fullName}</strong> đã tin dùng thảo dược thiên nhiên của Thảo Dược Xanh.
+            Cảm ơn quý khách <strong>{createdOrder.customer.fullName}</strong> đã tin dùng cây thuốc nam thiên nhiên của Cây Thuốc Ông Han.
           </p>
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/50 text-foreground text-sm font-semibold mb-6">
@@ -262,7 +262,7 @@ export default function CheckoutForm() {
               <div className="flex flex-col items-center bg-accent/20 p-5 rounded-2xl border">
                 <img
                   src={vietQrUrl}
-                  alt="Mã VietQR thanh toán Thảo Dược Xanh"
+                  alt="Mã VietQR thanh toán Cây Thuốc Ông Han"
                   className="w-full max-w-[260px] aspect-square object-contain rounded-xl shadow-xs"
                 />
                 <p className="text-xs text-muted-foreground mt-3 text-center">

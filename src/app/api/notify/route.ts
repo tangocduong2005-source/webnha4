@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         ? "Ví MoMo"
         : "Thanh toán khi nhận hàng (COD)";
 
-    const message = `🌿 *ĐƠN HÀNG MỚI TỪ THẢO DƯỢC XANH* 🌿
+    const message = `🌿 *ĐƠN HÀNG MỚI TỪ CÂY THUỐC ÔNG HAN* 🌿
 ━━━━━━━━━━━━━━━━━━
 🆔 *Mã đơn:* \`${orderNumber}\`
 👤 *Khách hàng:* ${customer.fullName}

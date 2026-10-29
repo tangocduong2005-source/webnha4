@@ -16,14 +16,13 @@ export default function Footer() {
               </div>
               <div>
                 <h3 className="font-heading text-xl font-bold text-white">
-                  Thảo Dược Xanh
+                  Cây Thuốc Ông Han
                 </h3>
-                <p className="text-xs text-white/50">Dược liệu thiên nhiên</p>
+                <p className="text-xs text-white/50">Cây thuốc & Dược liệu gia truyền</p>
               </div>
             </Link>
             <p className="text-sm leading-relaxed">
-              Chuyên cung cấp cây lá thuốc, dược liệu thiên nhiên chất lượng
-              cao. Nguồn gốc rõ ràng, an toàn cho sức khỏe gia đình bạn.
+              Cây Thuốc Ông Han chuyên cung cấp các loại cây lá thuốc, dược liệu tự nhiên thu hái và sơ chế chuẩn Đông Y cổ truyền. An toàn, hiệu quả và tận tâm vì sức khỏe người dùng.
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -121,15 +120,19 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
-                <span>123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh</span>
+                <span>Thôn Lễ Thần, xã Thái Ninh, tỉnh Hưng Yên</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4 shrink-0 text-primary" />
-                <span>1900 xxxx</span>
+                <a href="tel:0964001203" className="hover:text-primary transition-colors">
+                  0964001203
+                </a>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 shrink-0 text-primary" />
-                <span>contact@thaoduocxanh.vn</span>
+                <a href="mailto:tangocduong2005@gmail.com" className="hover:text-primary transition-colors">
+                  tangocduong2005@gmail.com
+                </a>
               </li>
             </ul>
           </div>
@@ -139,7 +142,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-white/40">
-          <p>© 2024 Thảo Dược Xanh. Tất cả quyền được bảo lưu.</p>
+          <p>© 2024 Cây Thuốc Ông Han. Tất cả quyền được bảo lưu.</p>
         </div>
       </div>
     </footer>

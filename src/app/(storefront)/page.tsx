@@ -27,7 +27,7 @@ export default function HomePage() {
               đình.&rdquo;
             </blockquote>
             <p className="text-muted-foreground">
-              — Triết lý của Thảo Dược Xanh
+              — Triết lý của Cây Thuốc Ông Han
             </p>
           </div>
         </div>
@@ -37,7 +37,7 @@ export default function HomePage() {
       <section className="py-16 bg-gradient-to-br from-primary/5 to-accent/50">
         <div className="container mx-auto px-4">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-center mb-12">
-            Vì Sao Chọn Thảo Dược Xanh?
+            Vì Sao Chọn Cây Thuốc Ông Han?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[

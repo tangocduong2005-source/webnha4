@@ -71,7 +71,7 @@ export default function AdminLayout({
             </div>
             <div>
               <h1 className="font-heading text-base font-bold text-white tracking-wide">
-                Thảo Dược Xanh
+                Cây Thuốc Ông Han
               </h1>
               <p className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
                 <Sparkles className="h-3 w-3" />

@@ -45,7 +45,9 @@ export default function Header() {
         <div className="container mx-auto px-4 py-1.5 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <Phone className="h-3.5 w-3.5" />
-            <span>Hotline: 1900 xxxx</span>
+            <a href="tel:0964001203" className="hover:underline font-medium">
+              Hotline: 0964001203
+            </a>
           </div>
           <div className="hidden md:flex items-center gap-4">
             <span>Miễn phí vận chuyển đơn từ 300.000đ</span>
@@ -68,10 +70,10 @@ export default function Header() {
               </div>
               <div>
                 <h1 className="font-heading text-xl font-bold text-primary leading-tight">
-                  Thảo Dược Xanh
+                  Cây Thuốc Ông Han
                 </h1>
                 <p className="text-[10px] text-muted-foreground leading-tight">
-                  Dược liệu thiên nhiên
+                  Dược liệu cổ truyền Thái Ninh
                 </p>
               </div>
             </Link>

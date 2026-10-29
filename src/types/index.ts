@@ -1,5 +1,5 @@
 // ==========================================
-// Type definitions for Thảo Dược Xanh store
+// Type definitions for Cây Thuốc Ông Han store
 // ==========================================
 
 export interface Category {

@@ -1,4 +1,4 @@
-// Prisma Schema - Thảo Dược Xanh
+// Prisma Schema - Cây Thuốc Ông Han
 // Database: MySQL 8.0
 
 generator client {
