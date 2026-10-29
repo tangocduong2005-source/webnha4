@@ -41,6 +41,9 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  X,
+  FileText,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -261,7 +264,7 @@ export default function AdminProductsPage() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold gap-2 shadow-xs rounded-xl h-10 px-5"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-2 shadow-sm rounded-lg h-10 px-5 transition-all"
               onClick={openAddDialog}
             >
               <Plus className="h-4 w-4" />
@@ -269,240 +272,292 @@ export default function AdminProductsPage() {
             </Button>
           </DialogTrigger>
 
-          {/* Modal dạng Drawer rộng rãi 2 cột */}
-          <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto p-6 sm:p-8 rounded-3xl">
-            <DialogHeader className="pb-3 border-b border-stone-200">
-              <DialogTitle className="font-heading text-2xl font-bold text-stone-900 flex items-center gap-2">
-                <Leaf className="h-6 w-6 text-emerald-800" />
-                <span>{editingProduct ? "Chỉnh Sửa Dược Liệu" : "Thêm Bài Thuốc / Cây Thuốc Mới"}</span>
-              </DialogTitle>
-            </DialogHeader>
-
-            <form onSubmit={handleSubmit} className="space-y-6 pt-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                {/* CỘT TRÁI: THÔNG TIN CƠ BẢN */}
-                <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-wider border-b border-emerald-100 pb-1.5">
-                    1. Thông Tin Cơ Bản & Phân Loại
-                  </h3>
-
+          {/* Modal chuẩn UX/UI rộng rãi 2 cột, Header & Footer cố định */}
+          <DialogContent
+            showCloseButton={false}
+            className="sm:max-w-4xl md:max-w-5xl lg:max-w-5xl w-full max-h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-2xl flex flex-col"
+          >
+            <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[90vh] overflow-hidden">
+              {/* Header Cố Định */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
+                    <Leaf className="h-5 w-5" />
+                  </div>
                   <div>
-                    <Label className="text-xs font-semibold">Tên cây thuốc / Bài thuốc *</Label>
-                    <Input
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="VD: Cà Gai Leo Quảng Nam"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold">Danh mục dược liệu *</Label>
-                    <Select
-                      value={formData.categoryId}
-                      onValueChange={(v) => setFormData({ ...formData, categoryId: v || "cat-2" })}
-                    >
-                      <SelectTrigger className="mt-1 bg-white">
-                        <SelectValue placeholder="Chọn danh mục" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-xs font-semibold">Xuất xứ vùng trồng</Label>
-                      <Input
-                        value={formData.origin}
-                        onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                        placeholder="Quảng Nam"
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs font-semibold">Khối lượng / Quy cách</Label>
-                      <Input
-                        value={formData.weight}
-                        onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                        placeholder="500g"
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold">Thành phần dược liệu</Label>
-                    <Input
-                      value={formData.ingredients}
-                      onChange={(e) => setFormData({ ...formData, ingredients: e.target.value })}
-                      placeholder="100% Cà gai leo tự nhiên sấy khô"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold">Tags công dụng (phân cách bằng dấu phẩy)</Label>
-                    <Input
-                      value={formData.tags}
-                      onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                      placeholder="giải độc gan, hạ men gan, tiêu viêm"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold">Mô tả ngắn hiển thị trên thẻ</Label>
-                    <Textarea
-                      value={formData.shortDescription}
-                      onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
-                      placeholder="Tóm tắt 1-2 câu về dược tính..."
-                      rows={2}
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs">
-                    <input
-                      type="checkbox"
-                      id="bestSeller"
-                      checked={formData.isBestSeller}
-                      onChange={(e) => setFormData({ ...formData, isBestSeller: e.target.checked })}
-                      className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500"
-                    />
-                    <label htmlFor="bestSeller" className="font-semibold text-amber-900 cursor-pointer">
-                      Gắn nhãn &ldquo;Sản Phẩm Bán Chạy&rdquo; ngoài trang chủ
-                    </label>
+                    <DialogTitle className="text-xl font-bold text-slate-900 leading-tight">
+                      {editingProduct ? "Chỉnh Sửa Bài Thuốc / Cây Thuốc" : "Thêm Bài Thuốc / Cây Thuốc Mới"}
+                    </DialogTitle>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {editingProduct
+                        ? "Cập nhật thông tin chi tiết của dược liệu trong hệ thống"
+                        : "Điền đầy đủ thông tin để niêm yết bài thuốc mới lên cửa hàng"}
+                    </p>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setDialogOpen(false)}
+                  className="h-9 w-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  title="Đóng modal"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-                {/* CỘT PHẢI: GIÁ, HÌNH ẢNH & Y HỌC */}
-                <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-wider border-b border-emerald-100 pb-1.5">
-                    2. Giá Cả, Tồn Kho & Y Lý Đông Y
-                  </h3>
+              {/* Nội dung Form cuộn mượt mà với 2 cột cân đối */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 max-h-[calc(90vh-140px)]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                  {/* CỘT 1: THÔNG TIN CƠ BẢN & PHÂN LOẠI */}
+                  <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-200">
+                      <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
+                        <FileText className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
+                          1. Thông Tin Cơ Bản & Phân Loại
+                        </h3>
+                        <p className="text-[11px] text-slate-500">Tên, danh mục, xuất xứ và quy cách sản phẩm</p>
+                      </div>
+                    </div>
 
-                  <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <Label className="text-xs font-semibold">Giá bán (₫) *</Label>
+                      <Label className="text-xs font-semibold text-slate-700">Tên cây thuốc / Bài thuốc *</Label>
                       <Input
-                        type="number"
                         required
-                        value={formData.price}
-                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                        placeholder="95000"
-                        className="mt-1"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="VD: Cà Gai Leo Quảng Nam"
+                        className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                       />
                     </div>
+
                     <div>
-                      <Label className="text-xs font-semibold">Giá cũ (₫)</Label>
+                      <Label className="text-xs font-semibold text-slate-700">Danh mục dược liệu *</Label>
+                      <Select
+                        value={formData.categoryId}
+                        onValueChange={(v) => setFormData({ ...formData, categoryId: v || "cat-2" })}
+                      >
+                        <SelectTrigger className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all">
+                          <SelectValue placeholder="Chọn danh mục" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-lg border border-slate-200 shadow-lg">
+                          {categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs font-semibold text-slate-700">Xuất xứ vùng trồng</Label>
+                        <Input
+                          value={formData.origin}
+                          onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                          placeholder="Quảng Nam"
+                          className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-semibold text-slate-700">Khối lượng / Quy cách</Label>
+                        <Input
+                          value={formData.weight}
+                          onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                          placeholder="500g"
+                          className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700">Thành phần dược liệu</Label>
                       <Input
-                        type="number"
-                        value={formData.originalPrice}
-                        onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
-                        placeholder="135000"
-                        className="mt-1"
+                        value={formData.ingredients}
+                        onChange={(e) => setFormData({ ...formData, ingredients: e.target.value })}
+                        placeholder="100% Cà gai leo tự nhiên sấy khô"
+                        className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                       />
                     </div>
+
                     <div>
-                      <Label className="text-xs font-semibold">Tồn kho (gói) *</Label>
+                      <Label className="text-xs font-semibold text-slate-700">Tags công dụng (phân cách bằng dấu phẩy)</Label>
                       <Input
-                        type="number"
+                        value={formData.tags}
+                        onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                        placeholder="giải độc gan, hạ men gan, tiêu viêm"
+                        className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700">Mô tả ngắn hiển thị trên thẻ</Label>
+                      <Textarea
+                        value={formData.shortDescription}
+                        onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
+                        placeholder="Tóm tắt 1-2 câu về dược tính..."
+                        rows={3}
+                        className="mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none"
+                      />
+                    </div>
+
+                    <label className="flex items-center gap-3 p-3.5 rounded-lg bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 font-medium cursor-pointer hover:bg-emerald-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={formData.isBestSeller}
+                        onChange={(e) => setFormData({ ...formData, isBestSeller: e.target.checked })}
+                        className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span>
+                        Gắn nhãn <strong>&ldquo;Sản Phẩm Bán Chạy&rdquo;</strong> ngoài trang chủ
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* CỘT 2: GIÁ CẢ, TỒN KHO & Y LÝ ĐÔNG Y */}
+                  <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-200">
+                      <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
+                        <Sparkles className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
+                          2. Giá Cả, Tồn Kho & Y Lý Đông Y
+                        </h3>
+                        <p className="text-[11px] text-slate-500">Định giá, tồn kho, hình ảnh và hướng dẫn điều trị</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs font-semibold text-slate-700">Giá bán (₫) *</Label>
+                        <Input
+                          type="number"
+                          required
+                          value={formData.price}
+                          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                          placeholder="95000"
+                          className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-semibold text-slate-700">Giá cũ (₫)</Label>
+                        <Input
+                          type="number"
+                          value={formData.originalPrice}
+                          onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
+                          placeholder="135000"
+                          className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-semibold text-slate-700">Tồn kho (gói) *</Label>
+                        <Input
+                          type="number"
+                          required
+                          value={formData.stock}
+                          onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                          placeholder="100"
+                          className="h-10 mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700">Link ảnh mẫu (URL Unsplash hoặc CDN)</Label>
+                      <div className="flex gap-2.5 mt-1.5 items-center">
+                        <Input
+                          value={formData.imageUrl}
+                          onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                          placeholder="https://images.unsplash.com/..."
+                          className="h-10 flex-1 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                        />
+                        {formData.imageUrl ? (
+                          <div className="h-10 w-10 rounded-lg overflow-hidden border border-slate-300 shrink-0 bg-slate-100 shadow-xs">
+                            <img
+                              src={formData.imageUrl}
+                              alt="preview"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = "none";
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-10 w-10 rounded-lg border border-dashed border-slate-300 shrink-0 flex items-center justify-center text-slate-400 bg-white">
+                            <Leaf className="h-4 w-4" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700">Công dụng & Chủ trị *</Label>
+                      <Textarea
                         required
-                        value={formData.stock}
-                        onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                        placeholder="100"
-                        className="mt-1"
+                        value={formData.usage}
+                        onChange={(e) => setFormData({ ...formData, usage: e.target.value })}
+                        placeholder="Mát gan, giải độc, hạ men gan..."
+                        rows={2}
+                        className="mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none"
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <Label className="text-xs font-semibold">Link ảnh mẫu (URL Unsplash hoặc CDN)</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        value={formData.imageUrl}
-                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                        placeholder="https://images.unsplash.com/..."
-                        className="flex-1"
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700">Cách dùng & Liều lượng *</Label>
+                      <Textarea
+                        required
+                        value={formData.dosage}
+                        onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
+                        placeholder="Sắc 35-50g với 1.5L nước..."
+                        rows={2}
+                        className="mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none"
                       />
-                      {formData.imageUrl && (
-                        <div className="h-10 w-10 rounded-lg overflow-hidden border shrink-0">
-                          <img
-                            src={formData.imageUrl}
-                            alt="preview"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
                     </div>
-                  </div>
 
-                  <div>
-                    <Label className="text-xs font-semibold">Công dụng & Chủ trị *</Label>
-                    <Textarea
-                      required
-                      value={formData.usage}
-                      onChange={(e) => setFormData({ ...formData, usage: e.target.value })}
-                      placeholder="Mát gan, giải độc, hạ men gan..."
-                      rows={2}
-                      className="mt-1"
-                    />
-                  </div>
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700">Lưu ý & Đối tượng dùng</Label>
+                      <Textarea
+                        value={formData.precautions}
+                        onChange={(e) => setFormData({ ...formData, precautions: e.target.value })}
+                        placeholder="Phụ nữ mang thai không nên dùng..."
+                        rows={2}
+                        className="mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none"
+                      />
+                    </div>
 
-                  <div>
-                    <Label className="text-xs font-semibold">Cách dùng & Liều lượng *</Label>
-                    <Textarea
-                      required
-                      value={formData.dosage}
-                      onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
-                      placeholder="Sắc 35-50g với 1.5L nước..."
-                      rows={2}
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold">Lưu ý & Đối tượng dùng</Label>
-                    <Textarea
-                      value={formData.precautions}
-                      onChange={(e) => setFormData({ ...formData, precautions: e.target.value })}
-                      placeholder="Phụ nữ mang thai không nên dùng..."
-                      rows={2}
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold">Mô tả dược tính chi tiết</Label>
-                    <Textarea
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Chi tiết nguồn gốc, nghiên cứu khoa học..."
-                      rows={3}
-                      className="mt-1"
-                    />
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700">Mô tả dược tính chi tiết</Label>
+                      <Textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        placeholder="Chi tiết nguồn gốc, nghiên cứu khoa học..."
+                        rows={3}
+                        className="mt-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-stone-200">
+              {/* Footer Cố Định */}
+              <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-3 shrink-0 rounded-b-2xl">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
-                  className="rounded-xl"
+                  className="h-10 px-5 rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100 font-medium transition-colors"
                 >
-                  Hủy Bỏ
+                  Hủy bỏ
                 </Button>
-                <Button type="submit" className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold rounded-xl px-6">
-                  {editingProduct ? "Lưu Cập Nhật" : "Tạo Mới Cây Thuốc"}
+                <Button
+                  type="submit"
+                  className="h-10 px-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md shadow-emerald-700/20 transition-all active:scale-[0.98]"
+                >
+                  {editingProduct ? "Lưu Cập Nhật" : "Lưu Bài Thuốc"}
                 </Button>
               </div>
             </form>
