@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  .theme {
+    --font-heading: 'Playfair Display', serif;
+    --font-sans: 'Inter', sans-serif;
+  }
+  :root {
+    --background: 50 20% 97%;
+    --foreground: 160 15% 15%;
+    --card: 50 15% 95%;
+    --card-foreground: 160 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 15% 15%;
+    --primary: 153 42% 30%;
+    --primary-foreground: 50 20% 97%;
+    --secondary: 30 40% 65%;
+    --secondary-foreground: 30 40% 15%;
+    --muted: 80 10% 90%;
+    --muted-foreground: 160 5% 40%;
+    --accent: 153 30% 90%;
+    --accent-foreground: 153 42% 20%;
+    --destructive: 0 84% 60%;
+    --border: 80 15% 85%;
+    --input: 80 15% 85%;
+    --ring: 153 42% 40%;
+    --chart-1: 153 42% 30%;
+    --chart-2: 120 30% 45%;
+    --chart-3: 30 40% 55%;
+    --chart-4: 80 30% 50%;
+    --chart-5: 200 30% 40%;
+    --radius: 0.75rem;
+    --sidebar: 153 30% 12%;
+    --sidebar-foreground: 50 20% 95%;
+    --sidebar-primary: 153 42% 50%;
+    --sidebar-primary-foreground: 50 20% 97%;
+    --sidebar-accent: 153 30% 18%;
+    --sidebar-accent-foreground: 50 20% 95%;
+    --sidebar-border: 153 20% 20%;
+    --sidebar-ring: 153 42% 40%;
+  }
+  .dark {
+    --background: 153 20% 8%;
+    --foreground: 50 20% 95%;
+    --card: 153 20% 12%;
+    --card-foreground: 50 20% 95%;
+    --popover: 153 20% 10%;
+    --popover-foreground: 50 20% 95%;
+    --primary: 153 42% 45%;
+    --primary-foreground: 50 20% 97%;
+    --secondary: 30 30% 45%;
+    --secondary-foreground: 30 30% 95%;
+    --muted: 153 15% 18%;
+    --muted-foreground: 80 10% 60%;
+    --accent: 153 25% 18%;
+    --accent-foreground: 153 30% 80%;
+    --destructive: 0 72% 51%;
+    --border: 153 15% 20%;
+    --input: 153 15% 22%;
+    --ring: 153 42% 45%;
+    --chart-1: 153 42% 45%;
+    --chart-2: 120 30% 50%;
+    --chart-3: 30 40% 55%;
+    --chart-4: 80 30% 55%;
+    --chart-5: 200 30% 50%;
+    --sidebar: 153 30% 6%;
+    --sidebar-foreground: 50 20% 95%;
+    --sidebar-primary: 153 42% 50%;
+    --sidebar-primary-foreground: 50 20% 97%;
+    --sidebar-accent: 153 25% 12%;
+    --sidebar-accent-foreground: 50 20% 95%;
+    --sidebar-border: 153 15% 15%;
+    --sidebar-ring: 153 42% 45%;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom styles for the herbal store */
+@layer components {
+  .font-heading {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .gradient-hero {
+    background: linear-gradient(135deg, hsl(153 42% 30%) 0%, hsl(120 30% 35%) 50%, hsl(80 40% 40%) 100%);
+  }
+
+  .gradient-hero-overlay {
+    background: linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .leaf-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5C30 5 15 20 15 35c0 8.284 6.716 15 15 15s15-6.716 15-15C45 20 30 5 30 5z' fill='%232D6A4F' fill-opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+  .hover-lift:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(50 20% 95%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(153 42% 60%);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(153 42% 45%);
+}
