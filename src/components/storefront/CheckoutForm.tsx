@@ -116,7 +116,31 @@ export default function CheckoutForm() {
       updatedAt: new Date().toISOString(),
     };
 
-    // 1. Lưu vào localStorage cho Admin
+    // 1. Lưu vào MySQL qua API /api/orders
+    try {
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerName: customer.fullName,
+          customerPhone: customer.phone,
+          customerEmail: customer.email,
+          customerAddress: `${customer.address}, ${customer.ward ? customer.ward + ", " : ""}${customer.district ? customer.district + ", " : ""}${customer.city}`,
+          paymentMethod,
+          notes: note,
+          totalAmount: total,
+          items: orderItems.map((it) => ({
+            productId: it.productId,
+            quantity: it.quantity,
+            price: it.price,
+          })),
+        }),
+      });
+    } catch (err) {
+      console.error("Lỗi lưu đơn hàng vào MySQL:", err);
+    }
+
+    // Backup lưu vào localStorage
     try {
       const existing = localStorage.getItem("thaoduocxanh-orders");
       const list: Order[] = existing ? JSON.parse(existing) : [];

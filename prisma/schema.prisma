@@ -1,0 +1,82 @@
+// Prisma Schema - Thảo Dược Xanh
+// Database: MySQL 8.0
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?   @db.Text
+  image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id            String      @id @default(cuid())
+  name          String
+  slug          String      @unique
+  description   String?     @db.Text
+  price         Int         // VND - stored as integer
+  originalPrice Int?        // Giá gốc (trước giảm)
+  stock         Int         @default(0)
+  unit          String      @default("gói")
+  origin        String?     // Xuất xứ
+  images        Json        // Array of image URLs stored as JSON
+  usage         String?     @db.Text  // Cách dùng
+  dosage        String?     @db.Text  // Liều lượng
+  precautions   String?     @db.Text  // Lưu ý
+  preservation  String?     @db.Text  // Bảo quản
+  isBestSeller  Boolean     @default(false)
+  isActive      Boolean     @default(true)
+  categoryId    String?
+  category      Category?   @relation(fields: [categoryId], references: [id])
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("products")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderCode       String      @unique // Mã đơn hàng: DH-xxxxx
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  customerAddress String      @db.Text
+  totalAmount     Int         // Tổng tiền VND
+  status          String      @default("pending") // pending, confirmed, shipping, delivered, cancelled
+  paymentMethod   String      @default("cod") // cod, bank_transfer, momo
+  paymentStatus   String      @default("unpaid") // unpaid, paid
+  notes           String?     @db.Text
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int     // Giá tại thời điểm đặt
+
+  @@map("order_items")
+}
+

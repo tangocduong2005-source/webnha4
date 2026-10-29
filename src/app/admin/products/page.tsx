@@ -74,25 +74,31 @@ export default function AdminProductsPage() {
     isBestSeller: false,
   });
 
-  useEffect(() => {
+  const [_isLoading, setIsLoading] = useState(false);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
     try {
-      const saved = localStorage.getItem("thaoduocxanh-products");
-      if (saved) {
-        setProductList(JSON.parse(saved));
+      const res = await fetch("/api/products");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        setProductList(json.data);
+      } else {
+        const saved = localStorage.getItem("thaoduocxanh-products");
+        if (saved) setProductList(JSON.parse(saved));
       }
     } catch (e) {
-      console.error(e);
-    }
-  }, []);
-
-  const saveProducts = (newList: Product[]) => {
-    setProductList(newList);
-    try {
-      localStorage.setItem("thaoduocxanh-products", JSON.stringify(newList));
-    } catch (e) {
-      console.error(e);
+      console.error("Error fetching from MySQL:", e);
+      const saved = localStorage.getItem("thaoduocxanh-products");
+      if (saved) setProductList(JSON.parse(saved));
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -168,7 +174,7 @@ export default function AdminProductsPage() {
     setDialogOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const slug =
       editingProduct?.slug ||
@@ -185,15 +191,12 @@ export default function AdminProductsPage() {
       formData.imageUrl.trim() ||
       "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1000&q=80";
 
-    const productData: Product = {
-      id: editingProduct?.id || `prod-${Date.now()}`,
+    const payload = {
       name: formData.name,
       slug,
       categoryId: formData.categoryId,
       price: Number(formData.price) || 0,
-      originalPrice: formData.originalPrice
-        ? Number(formData.originalPrice)
-        : undefined,
+      originalPrice: formData.originalPrice ? Number(formData.originalPrice) : null,
       images: [defaultImage],
       shortDescription: formData.shortDescription,
       description: formData.description,
@@ -204,34 +207,40 @@ export default function AdminProductsPage() {
       ingredients: formData.ingredients,
       weight: formData.weight,
       stock: Number(formData.stock) || 0,
-      rating: editingProduct?.rating || 5.0,
-      reviewCount: editingProduct?.reviewCount || 1,
-      tags: formData.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      isFeatured: true,
       isBestSeller: formData.isBestSeller,
-      isNew: editingProduct ? editingProduct.isNew : true,
-      createdAt:
-        editingProduct?.createdAt || new Date().toISOString().slice(0, 10),
     };
 
-    if (editingProduct) {
-      saveProducts(
-        productList.map((p) => (p.id === editingProduct.id ? productData : p))
-      );
-    } else {
-      saveProducts([productData, ...productList]);
+    try {
+      if (editingProduct) {
+        await fetch(`/api/products/${editingProduct.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+      await fetchProducts();
+    } catch (err) {
+      console.error("Lỗi lưu vào MySQL:", err);
     }
 
     setDialogOpen(false);
     resetForm();
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Bạn có chắc chắn muốn xóa cây thuốc này khỏi danh mục?")) {
-      saveProducts(productList.filter((p) => p.id !== id));
+  const handleDelete = async (id: string) => {
+    if (confirm("Bạn có chắc chắn muốn xóa cây thuốc này khỏi MySQL database?")) {
+      try {
+        await fetch(`/api/products/${id}`, { method: "DELETE" });
+        await fetchProducts();
+      } catch (err) {
+        console.error("Lỗi xóa từ MySQL:", err);
+      }
     }
   };
 

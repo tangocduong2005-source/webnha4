@@ -69,27 +69,52 @@ export default function AdminOrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
 
-  // Tải đơn hàng từ localStorage khi mở trang
-  useEffect(() => {
+  const fetchOrders = async () => {
     try {
-      const saved = localStorage.getItem("thaoduocxanh-orders");
-      if (saved) {
-        const parsed: Order[] = JSON.parse(saved);
-        setOrderList(parsed);
+      const res = await fetch("/api/orders");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        // Map Prisma DB order to UI Order format
+        const mapped: Order[] = json.data.map((o: any) => ({
+          id: o.id,
+          orderNumber: o.orderCode,
+          customer: {
+            name: o.customerName,
+            phone: o.customerPhone,
+            email: o.customerEmail || "",
+            address: o.customerAddress,
+            city: "",
+          },
+          items: (o.items || []).map((it: any) => ({
+            productId: it.productId,
+            productName: it.product?.name || "Cây thuốc thảo dược",
+            price: it.price,
+            quantity: it.quantity,
+          })),
+          subtotal: o.totalAmount,
+          shippingFee: 0,
+          total: o.totalAmount,
+          status: o.status,
+          paymentMethod: o.paymentMethod,
+          paymentStatus: o.paymentStatus,
+          createdAt: o.createdAt,
+          notes: o.notes,
+        }));
+        setOrderList(mapped);
+      } else {
+        const saved = localStorage.getItem("thaoduocxanh-orders");
+        if (saved) setOrderList(JSON.parse(saved));
       }
     } catch (e) {
-      console.error(e);
-    }
-  }, []);
-
-  const saveOrders = (newList: Order[]) => {
-    setOrderList(newList);
-    try {
-      localStorage.setItem("thaoduocxanh-orders", JSON.stringify(newList));
-    } catch (e) {
-      console.error(e);
+      console.error("Error fetching orders from MySQL:", e);
+      const saved = localStorage.getItem("thaoduocxanh-orders");
+      if (saved) setOrderList(JSON.parse(saved));
     }
   };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -114,13 +139,17 @@ export default function AdminOrdersPage() {
     currentPage * pageSize
   );
 
-  const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-    const updated = orderList.map((o) =>
-      o.id === orderId
-        ? { ...o, status: newStatus, updatedAt: new Date().toISOString() }
-        : o
-    );
-    saveOrders(updated);
+  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+    try {
+      await fetch(`/api/orders/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      await fetchOrders();
+    } catch (e) {
+      console.error("Lỗi cập nhật trạng thái đơn hàng:", e);
+    }
     if (selectedOrder?.id === orderId) {
       setSelectedOrder((prev) =>
         prev ? { ...prev, status: newStatus } : null

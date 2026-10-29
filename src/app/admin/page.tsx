@@ -31,15 +31,51 @@ export default function AdminDashboard() {
   const [productList, setProductList] = useState<Product[]>(initialProducts);
 
   useEffect(() => {
-    try {
-      const savedOrders = localStorage.getItem("thaoduocxanh-orders");
-      if (savedOrders) setOrderList(JSON.parse(savedOrders));
+    const fetchData = async () => {
+      try {
+        const [pRes, oRes] = await Promise.all([
+          fetch("/api/products"),
+          fetch("/api/orders"),
+        ]);
+        const pJson = await pRes.json();
+        const oJson = await oRes.json();
 
-      const savedProducts = localStorage.getItem("thaoduocxanh-products");
-      if (savedProducts) setProductList(JSON.parse(savedProducts));
-    } catch (e) {
-      console.error(e);
-    }
+        if (pJson.success && Array.isArray(pJson.data) && pJson.data.length > 0) {
+          setProductList(pJson.data);
+        }
+        if (oJson.success && Array.isArray(oJson.data) && oJson.data.length > 0) {
+          const mappedOrders: Order[] = oJson.data.map((o: any) => ({
+            id: o.id,
+            orderNumber: o.orderCode,
+            customer: {
+              name: o.customerName,
+              phone: o.customerPhone,
+              email: o.customerEmail || "",
+              address: o.customerAddress,
+              city: "",
+            },
+            items: (o.items || []).map((it: any) => ({
+              productId: it.productId,
+              productName: it.product?.name || "Cây thuốc",
+              price: it.price,
+              quantity: it.quantity,
+            })),
+            subtotal: o.totalAmount,
+            shippingFee: 0,
+            total: o.totalAmount,
+            status: o.status,
+            paymentMethod: o.paymentMethod,
+            paymentStatus: o.paymentStatus,
+            createdAt: o.createdAt,
+            notes: o.notes,
+          }));
+          setOrderList(mappedOrders);
+        }
+      } catch (e) {
+        console.error("Lỗi đồng bộ Dashboard từ MySQL:", e);
+      }
+    };
+    fetchData();
   }, []);
 
   const totalRevenue = orderList.reduce((sum, o) => sum + o.total, 0);
