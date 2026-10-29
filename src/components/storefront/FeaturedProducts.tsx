@@ -1,13 +1,28 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { products } from "@/data/products";
+import { products as fallbackProducts } from "@/data/products";
 import ProductCard from "./ProductCard";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Product } from "@/types";
 
 export default function FeaturedProducts() {
-  const featuredProducts = products.filter((p) => p.isFeatured);
+  const [productList, setProductList] = useState<Product[]>(fallbackProducts);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setProductList(json.data);
+        }
+      })
+      .catch((e) => console.error("Lỗi tải sản phẩm nổi bật từ MySQL:", e));
+  }, []);
+
+  const featuredProducts = productList.filter((p) => p.isFeatured || p.isBestSeller);
 
   return (
     <section className="py-16 bg-accent/30">

@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { Product } from "@/types";
 import { products, reviews } from "@/data/products";
 import { categories } from "@/data/categories";
 import { useCart } from "@/lib/store";
@@ -31,7 +32,7 @@ import {
   Flame,
   FileText,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -39,7 +40,21 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const product = products.find((p) => p.slug === params.slug);
+  const initialProduct = products.find((p) => p.slug === params.slug);
+  const [product, setProduct] = useState<Product | undefined>(initialProduct);
+
+  useEffect(() => {
+    if (params.slug) {
+      fetch(`/api/products/${params.slug}`)
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.success && json.data) {
+            setProduct(json.data);
+          }
+        })
+        .catch((e) => console.error("Lỗi tải chi tiết cây thuốc từ MySQL:", e));
+    }
+  }, [params.slug]);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [imgErrorMap, setImgErrorMap] = useState<Record<number, boolean>>({});

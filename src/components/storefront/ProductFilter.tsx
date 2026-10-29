@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { products, allTags } from "@/data/products";
+import { useState, useMemo, useEffect } from "react";
+import { products as fallbackProducts, allTags } from "@/data/products";
 import { categories } from "@/data/categories";
 import { Product } from "@/types";
 import { Search, SlidersHorizontal, X } from "lucide-react";
@@ -27,14 +27,26 @@ export default function ProductFilter({
   initialCategory = "",
   onFilterChange,
 }: ProductFilterProps) {
+  const [productList, setProductList] = useState<Product[]>(fallbackProducts);
   const [search, setSearch] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
 
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setProductList(json.data);
+        }
+      })
+      .catch((e) => console.error("Lỗi tải cây thuốc từ MySQL:", e));
+  }, []);
+
   const filteredProducts = useMemo(() => {
-    let result = [...products];
+    let result = [...productList];
 
     // Search
     if (search.trim()) {
@@ -87,7 +99,7 @@ export default function ProductFilter({
 
     onFilterChange(result);
     return result;
-  }, [search, selectedCategory, selectedTags, sortBy, onFilterChange]);
+  }, [productList, search, selectedCategory, selectedTags, sortBy, onFilterChange]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>

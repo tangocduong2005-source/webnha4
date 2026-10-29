@@ -1,11 +1,31 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { medicinalHerbs } from "@/data/medicinal-herbs";
+import { medicinalHerbs as fallbackHerbs } from "@/data/medicinal-herbs";
 import { ArrowRight, Sparkles, ShieldCheck, HeartPulse, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Product } from "@/types";
 
 export default function HerbalSpotlight() {
+  const [herbs, setHerbs] = useState<Product[]>(fallbackHerbs);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          // Lấy 4 cây thuốc đặc trưng nếu có trong database
+          const matched = fallbackHerbs.map((fb) => {
+            const found = json.data.find((p: Product) => p.slug === fb.slug || p.id === fb.id);
+            return found || fb;
+          });
+          setHerbs(matched);
+        }
+      })
+      .catch((e) => console.error("Lỗi đồng bộ 4 cây thuốc từ MySQL:", e));
+  }, []);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -36,7 +56,7 @@ export default function HerbalSpotlight() {
 
         {/* 4 Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {medicinalHerbs.map((herb) => (
+          {herbs.map((herb) => (
             <div
               key={herb.id}
               className="bg-white rounded-3xl border border-stone-200/80 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 flex flex-col transition-all duration-300 group"
