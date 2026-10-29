@@ -17,7 +17,7 @@ export const medicinalHerbs: Product[] = [
     price: 95000,
     originalPrice: 135000,
     images: [
-      "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1000&q=80",
+      "https://tse1.mm.bing.net/th/id/OIP.smnBviBS76tZOHlKTXlUEwHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
       "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=1000&q=80",
       "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1000&q=80",
     ],

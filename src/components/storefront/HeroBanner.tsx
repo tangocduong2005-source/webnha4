@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +15,25 @@ import {
 } from "lucide-react";
 
 export default function HeroBanner() {
+  const [spotlightImage, setSpotlightImage] = useState(
+    "https://tse1.mm.bing.net/th/id/OIP.smnBviBS76tZOHlKTXlUEwHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+  );
+  const [spotlightName, setSpotlightName] = useState(
+    "Cà Gai Leo Sấy Khô Chuẩn GMP"
+  );
+
+  useEffect(() => {
+    fetch("/api/products/ca-gai-leo")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          const img = json.data.images?.[0];
+          if (img) setSpotlightImage(img);
+          if (json.data.name) setSpotlightName(json.data.name);
+        }
+      })
+      .catch(() => {});
+  }, []);
   return (
     <section className="relative overflow-hidden">
       {/* Hero background with deep emerald to teal gradient */}
@@ -110,13 +132,13 @@ export default function HeroBanner() {
                 {/* Split mini preview */}
                 <div className="aspect-[16/10] rounded-2xl overflow-hidden relative shadow-inner bg-black/20">
                   <img
-                    src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80"
-                    alt="Cà gai leo sấy khô tự nhiên"
+                    src={spotlightImage}
+                    alt={spotlightName}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
                     <p className="text-xs text-emerald-300 font-medium">Bảo vệ & Phục hồi tế bào gan</p>
-                    <h3 className="font-heading text-lg font-bold">Cà Gai Leo Sấy Khô Chuẩn GMP</h3>
+                    <h3 className="font-heading text-lg font-bold">{spotlightName}</h3>
                     <p className="text-xs text-white/80 line-clamp-1 mt-0.5">Vùng dược liệu Quảng Nam • Giàu hoạt chất Glycoalkaloid</p>
                   </div>
                 </div>

@@ -223,7 +223,7 @@ export default function AdminRevenueReportPage() {
           quantity: val.quantity,
           revenue: val.revenue,
           stock: prod?.stock ?? 50,
-          image: prod?.images?.[0] || "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=300&q=80",
+          image: prod?.images?.[0] || "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=300&q=80",
         };
       })
       .sort((a, b) => b.revenue - a.revenue)
@@ -684,3 +684,4 @@ export default function AdminRevenueReportPage() {
     </div>
   );
 }
+

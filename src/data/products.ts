@@ -13,7 +13,7 @@ const otherProducts: Product[] = [
     originalPrice: 130000,
     images: [
       "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=800&q=80",
     ],
     shortDescription:
       "Thảo dược trường thọ - Giảm mỡ máu, hạ huyết áp, ổn định đường huyết và chống oxy hóa tế bào.",
@@ -53,7 +53,7 @@ Các nghiên cứu lâm sàng tại nhiều quốc gia đã chứng minh Giảo 
     originalPrice: 100000,
     images: [
       "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80",
     ],
     shortDescription:
       "Đặc sản Đà Lạt - Mát gan, lợi mật, thanh nhiệt, giải độc cơ thể tự nhiên và giảm mụn nhọt.",

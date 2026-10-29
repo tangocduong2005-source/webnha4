@@ -40,7 +40,7 @@ export async function GET(request: Request) {
         }
       }
       if (!Array.isArray(images) || images.length === 0) {
-        images = ["https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80"];
+        images = ["https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=800&q=80"];
       }
 
       return {

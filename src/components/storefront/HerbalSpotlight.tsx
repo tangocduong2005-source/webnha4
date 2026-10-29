@@ -67,7 +67,7 @@ export default function HerbalSpotlight() {
                 className="relative aspect-[4/3] overflow-hidden bg-stone-100 block"
               >
                 <img
-                  src={herb.images?.[0] || "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80"}
+                  src={herb.images?.[0] || "https://tse1.mm.bing.net/th/id/OIP.smnBviBS76tZOHlKTXlUEwHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"}
                   alt={herb.name}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
                   loading="lazy"

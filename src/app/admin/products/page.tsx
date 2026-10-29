@@ -142,7 +142,7 @@ export default function AdminProductsPage() {
       categoryId: "cat-2",
       price: "",
       originalPrice: "",
-      imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1000&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=1000&q=80",
       shortDescription: "",
       description: "",
       usage: "",
@@ -201,7 +201,7 @@ export default function AdminProductsPage() {
 
     const defaultImage =
       formData.imageUrl.trim() ||
-      "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1000&q=80";
+      "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=1000&q=80";
 
     const payload = {
       name: formData.name,
