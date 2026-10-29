@@ -49,10 +49,13 @@ import Link from "next/link";
 
 export default function AdminProductsPage() {
   const [productList, setProductList] = useState<Product[]>(initialProducts);
+  const [currentUser, setCurrentUser] = useState<{ role: string } | null>(null);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const isAdmin = currentUser?.role === "ADMIN";
 
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,6 +104,12 @@ export default function AdminProductsPage() {
 
   useEffect(() => {
     fetchProducts();
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.user) setCurrentUser(d.user);
+      })
+      .catch(() => {});
   }, []);
 
   const formatPrice = (price: number) => {
@@ -260,20 +269,21 @@ export default function AdminProductsPage() {
           </p>
         </div>
 
-        {/* Modal thêm bài thuốc mới */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-2 shadow-sm rounded-lg h-10 px-5 transition-all"
-              onClick={openAddDialog}
-            >
-              <Plus className="h-4 w-4" />
-              <span>Thêm Bài Thuốc Mới</span>
-            </Button>
-          </DialogTrigger>
+        {/* Modal thêm bài thuốc mới (Chỉ ADMIN) */}
+        {isAdmin ? (
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-2 shadow-sm rounded-lg h-10 px-5 transition-all"
+                onClick={openAddDialog}
+              >
+                <Plus className="h-4 w-4" />
+                <span>Thêm Bài Thuốc Mới</span>
+              </Button>
+            </DialogTrigger>
 
-          {/* Modal chuẩn UX/UI rộng rãi 2 cột, Header & Footer cố định */}
-          <DialogContent
+            {/* Modal chuẩn UX/UI rộng rãi 2 cột, Header & Footer cố định */}
+            <DialogContent
             showCloseButton={false}
             className="sm:max-w-4xl md:max-w-5xl lg:max-w-5xl w-full max-h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-2xl flex flex-col"
           >
@@ -563,6 +573,11 @@ export default function AdminProductsPage() {
             </form>
           </DialogContent>
         </Dialog>
+        ) : (
+          <Badge variant="outline" className="border-stone-300 text-stone-500 py-1.5 px-3 text-xs bg-white">
+            🔒 Chỉ Xem (Cần quyền ADMIN để thêm)
+          </Badge>
+        )}
       </div>
 
       {/* Filter and Search Bar */}
@@ -701,24 +716,28 @@ export default function AdminProductsPage() {
                             <ExternalLink className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-emerald-800 hover:bg-emerald-100/50"
-                          title="Sửa bài thuốc"
-                          onClick={() => openEditDialog(product)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-rose-600 hover:bg-rose-100/50"
-                          title="Xóa bài thuốc"
-                          onClick={() => handleDelete(product.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {isAdmin && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-emerald-800 hover:bg-emerald-100/50"
+                              title="Sửa bài thuốc"
+                              onClick={() => openEditDialog(product)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-rose-600 hover:bg-rose-100/50"
+                              title="Xóa bài thuốc"
+                              onClick={() => handleDelete(product.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   FolderTree,
@@ -12,15 +12,23 @@ import {
   Store,
   Bell,
   Sparkles,
+  BarChart3,
+  LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const sidebarLinks = [
   {
     href: "/admin",
     label: "Tổng quan",
     icon: LayoutDashboard,
+  },
+  {
+    href: "/admin/doanh-thu",
+    label: "Báo cáo Doanh thu",
+    icon: BarChart3,
   },
   {
     href: "/admin/products",
@@ -45,7 +53,38 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{
+    name: string;
+    email: string;
+    role: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        const json = await res.json();
+        if (json.success && json.user) {
+          setCurrentUser(json.user);
+        }
+      } catch {
+        // Ignored
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } catch {
+      window.location.href = "/login";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-stone-100/60 font-sans">
@@ -123,14 +162,30 @@ export default function AdminLayout({
             <ArrowLeft className="h-3.5 w-3.5 rotate-180 text-stone-500" />
           </Link>
 
-          <div className="flex items-center gap-3 px-3.5 py-2">
-            <div className="h-8 w-8 rounded-full bg-emerald-700/50 border border-emerald-500/40 text-emerald-200 flex items-center justify-center font-bold text-xs">
-              AD
+          <div className="flex items-center justify-between p-2 rounded-xl bg-stone-800/40 border border-stone-800/80">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="h-8 w-8 rounded-full bg-emerald-700/60 border border-emerald-500/40 text-emerald-200 flex items-center justify-center font-bold text-xs shrink-0">
+                {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : "AD"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-white truncate">
+                  {currentUser?.name || "Dược Sĩ Quản Trị"}
+                </p>
+                <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold">
+                  <ShieldCheck className="h-3 w-3" />
+                  <span>{currentUser?.role || "ADMIN"}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-white truncate">Dược Sĩ Quản Trị</p>
-              <p className="text-[10px] text-stone-500">Chủ cửa hàng</p>
-            </div>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              title="Đăng xuất khỏi Quản trị"
+              className="h-7 w-7 rounded-lg text-stone-400 hover:text-rose-400 hover:bg-stone-800 flex items-center justify-center transition-colors shrink-0 ml-1"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       </aside>

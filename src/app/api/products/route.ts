@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { AUTH_COOKIE_NAME, decodeSession } from "@/lib/auth";
 
 // GET /api/products - Lấy danh sách sản phẩm từ MySQL
 export async function GET(request: Request) {
@@ -64,9 +65,23 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/products - Thêm sản phẩm mới vào MySQL (Dành cho Admin)
+// POST /api/products - Thêm sản phẩm mới vào MySQL (Chỉ ADMIN)
 export async function POST(request: Request) {
   try {
+    const cookieHeader = request.headers.get("cookie") || "";
+    const cookieMatch = cookieHeader.match(new RegExp(`${AUTH_COOKIE_NAME}=([^;]+)`));
+    const session = cookieMatch ? decodeSession(cookieMatch[1]) : null;
+
+    if (!session || session.role !== "ADMIN") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Forbidden: Chỉ Quản trị viên (ADMIN) mới có quyền thêm bài thuốc mới.",
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const {
       name,

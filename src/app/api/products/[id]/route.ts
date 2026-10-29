@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { AUTH_COOKIE_NAME, decodeSession } from "@/lib/auth";
 
 // GET /api/products/[id] - Lấy chi tiết sản phẩm theo ID hoặc Slug
 export async function GET(
@@ -56,12 +57,26 @@ export async function GET(
   }
 }
 
-// PUT /api/products/[id] - Cập nhật thông tin/giá/tồn kho sản phẩm trong MySQL
+// PUT /api/products/[id] - Cập nhật thông tin/giá/tồn kho sản phẩm trong MySQL (Chỉ ADMIN)
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    const cookieHeader = request.headers.get("cookie") || "";
+    const cookieMatch = cookieHeader.match(new RegExp(`${AUTH_COOKIE_NAME}=([^;]+)`));
+    const session = cookieMatch ? decodeSession(cookieMatch[1]) : null;
+
+    if (!session || session.role !== "ADMIN") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Forbidden: Chỉ Quản trị viên (ADMIN) mới có quyền chỉnh sửa bài thuốc.",
+        },
+        { status: 403 }
+      );
+    }
+
     const { id } = params;
     const body = await request.json();
 
@@ -101,12 +116,26 @@ export async function PUT(
   }
 }
 
-// DELETE /api/products/[id] - Xóa sản phẩm khỏi MySQL
+// DELETE /api/products/[id] - Xóa sản phẩm khỏi MySQL (Chỉ ADMIN)
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    const cookieHeader = request.headers.get("cookie") || "";
+    const cookieMatch = cookieHeader.match(new RegExp(`${AUTH_COOKIE_NAME}=([^;]+)`));
+    const session = cookieMatch ? decodeSession(cookieMatch[1]) : null;
+
+    if (!session || session.role !== "ADMIN") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Forbidden: Chỉ Quản trị viên (ADMIN) mới có quyền xóa bài thuốc khỏi hệ thống.",
+        },
+        { status: 403 }
+      );
+    }
+
     const { id } = params;
     await prisma.product.delete({
       where: { id },
