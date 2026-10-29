@@ -53,10 +53,10 @@ export default function ProductFilter({
       const query = search.toLowerCase();
       result = result.filter(
         (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.shortDescription.toLowerCase().includes(query) ||
-          p.usage.toLowerCase().includes(query) ||
-          p.tags.some((t) => t.toLowerCase().includes(query))
+          p.name?.toLowerCase().includes(query) ||
+          p.shortDescription?.toLowerCase().includes(query) ||
+          p.usage?.toLowerCase().includes(query) ||
+          (p.tags || []).some((t) => t.toLowerCase().includes(query))
       );
     }
 
@@ -71,7 +71,7 @@ export default function ProductFilter({
     // Tags
     if (selectedTags.length > 0) {
       result = result.filter((p) =>
-        selectedTags.some((tag) => p.tags.includes(tag))
+        selectedTags.some((tag) => (p.tags || []).includes(tag))
       );
     }
 

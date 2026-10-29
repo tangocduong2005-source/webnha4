@@ -67,13 +67,13 @@ export default function HerbalSpotlight() {
                 className="relative aspect-[4/3] overflow-hidden bg-stone-100 block"
               >
                 <img
-                  src={herb.images[0]}
+                  src={herb.images?.[0] || "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80"}
                   alt={herb.name}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
                   loading="lazy"
                 />
                 <div className="absolute top-3 left-3 bg-emerald-900/85 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg">
-                  {herb.weight}
+                  {herb.weight || "500g"}
                 </div>
                 <div className="absolute top-3 right-3 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-xs">
                   <Flame className="h-3 w-3 fill-current" />

@@ -24,7 +24,30 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ success: true, data: product });
+    let images = (product as any).images;
+    if (typeof images === "string") {
+      try {
+        images = JSON.parse(images);
+      } catch {
+        images = [images];
+      }
+    }
+    if (!Array.isArray(images) || images.length === 0) {
+      images = ["https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80"];
+    }
+
+    const formatted = {
+      ...product,
+      images,
+      tags: Array.isArray((product as any).tags) ? (product as any).tags : ["thảo dược", "thiên nhiên"],
+      rating: (product as any).rating ?? 4.9,
+      reviewCount: (product as any).reviewCount ?? 128,
+      shortDescription: (product as any).shortDescription || (product.description ? product.description.slice(0, 120) + "..." : "Thảo dược tự nhiên"),
+      weight: (product as any).weight || product.unit || "500g",
+      isFeatured: (product as any).isFeatured ?? true,
+    };
+
+    return NextResponse.json({ success: true, data: formatted });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },

@@ -29,7 +29,32 @@ export async function GET(request: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, data: products });
+    const formatted = products.map((p: any) => {
+      let images = p.images;
+      if (typeof images === "string") {
+        try {
+          images = JSON.parse(images);
+        } catch {
+          images = [images];
+        }
+      }
+      if (!Array.isArray(images) || images.length === 0) {
+        images = ["https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80"];
+      }
+
+      return {
+        ...p,
+        images,
+        tags: Array.isArray(p.tags) ? p.tags : ["thảo dược", "thiên nhiên"],
+        rating: p.rating ?? 4.9,
+        reviewCount: p.reviewCount ?? 128,
+        shortDescription: p.shortDescription || (p.description ? p.description.slice(0, 120) + "..." : "Thảo dược tự nhiên"),
+        weight: p.weight || p.unit || "500g",
+        isFeatured: p.isFeatured ?? true,
+      };
+    });
+
+    return NextResponse.json({ success: true, data: formatted });
   } catch (error: any) {
     console.error("Lỗi lấy danh sách sản phẩm:", error);
     return NextResponse.json(

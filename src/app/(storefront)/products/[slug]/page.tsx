@@ -284,12 +284,12 @@ export default function ProductDetailPage() {
 
           {/* Short Description */}
           <p className="text-stone-600 leading-relaxed text-sm sm:text-base">
-            {product.shortDescription}
+            {product.shortDescription || (product.description ? product.description.slice(0, 150) + "..." : "")}
           </p>
 
           {/* Key Tags */}
           <div className="flex flex-wrap gap-2">
-            {product.tags.map((tag) => (
+            {(product.tags || []).map((tag) => (
               <Badge
                 key={tag}
                 variant="outline"

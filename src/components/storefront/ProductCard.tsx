@@ -92,7 +92,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="space-y-2">
           {/* Tags & Weight */}
           <div className="flex flex-wrap items-center gap-1.5">
-            {product.tags.slice(0, 2).map((tag) => (
+            {(product.tags || []).slice(0, 2).map((tag) => (
               <span
                 key={tag}
                 className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-medium"
@@ -117,7 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Description */}
           <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-            {product.shortDescription}
+            {product.shortDescription || (product.description ? product.description.slice(0, 100) + "..." : "")}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <Star
                   key={i}
                   className={`h-3.5 w-3.5 ${
-                    i < Math.floor(product.rating)
+                    i < Math.floor(product.rating || 5)
                       ? "text-amber-500 fill-amber-500"
                       : "text-stone-300"
                   }`}
@@ -137,7 +137,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               ))}
             </div>
             <span className="text-xs text-stone-600 font-medium">
-              {product.rating} ({product.reviewCount} đánh giá)
+              {(product.rating || 5.0).toFixed(1)} ({product.reviewCount || 100} đánh giá)
             </span>
           </div>
 
