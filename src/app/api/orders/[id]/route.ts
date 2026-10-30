@@ -9,11 +9,12 @@ export async function PUT(
   try {
     const { id } = params;
     const body = await request.json();
-    const { status, paymentStatus } = body;
+    const { status, paymentStatus, paymentProof } = body;
 
     const updateData: any = {};
     if (status) updateData.status = status;
     if (paymentStatus) updateData.paymentStatus = paymentStatus;
+    if (paymentProof !== undefined) updateData.paymentProof = paymentProof;
 
     const updated = await prisma.order.update({
       where: { id },

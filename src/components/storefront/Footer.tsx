@@ -71,6 +71,22 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
+                  href="/tra-cuu-don-hang"
+                  className="text-sm font-semibold text-emerald-300 hover:text-white transition-colors"
+                >
+                  🔍 Tra cứu tiến trình đơn hàng
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/account/orders"
+                  className="text-sm hover:text-primary transition-colors"
+                >
+                  Lịch sử mua hàng
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="#"
                   className="text-sm hover:text-primary transition-colors"
                 >

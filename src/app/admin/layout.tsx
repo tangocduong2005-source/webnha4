@@ -15,6 +15,7 @@ import {
   BarChart3,
   LogOut,
   ShieldCheck,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -44,6 +45,11 @@ const sidebarLinks = [
     href: "/admin/categories",
     label: "Danh mục dược liệu",
     icon: FolderTree,
+  },
+  {
+    href: "/admin/bank-account",
+    label: "Cấu hình Ngân hàng",
+    icon: CreditCard,
   },
 ];
 

@@ -52,6 +52,15 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-4">
             <span>Miễn phí vận chuyển đơn từ 300.000đ</span>
             <span>•</span>
+            <Link href="/tra-cuu-don-hang" className="hover:underline flex items-center gap-1 font-semibold text-amber-200">
+              <Search className="h-3 w-3" />
+              Tra cứu đơn hàng
+            </Link>
+            <span>•</span>
+            <Link href="/account/orders" className="hover:underline">
+              Đơn hàng của tôi
+            </Link>
+            <span>•</span>
             <Link href="/admin" className="hover:underline">
               Quản trị
             </Link>
@@ -325,6 +334,15 @@ export default function Header() {
                   Nổi bật
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/tra-cuu-don-hang"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors"
+                >
+                  <Search className="h-3.5 w-3.5 text-emerald-600" />
+                  Tra cứu đơn hàng
+                </Link>
+              </li>
             </ul>
           </div>
         </nav>
@@ -346,6 +364,20 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Tất cả sản phẩm
+              </Link>
+              <Link
+                href="/tra-cuu-don-hang"
+                className="block px-3 py-2 rounded-md hover:bg-accent text-sm text-emerald-800 font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Tra cứu đơn hàng
+              </Link>
+              <Link
+                href="/account/orders"
+                className="block px-3 py-2 rounded-md hover:bg-accent text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Đơn hàng của tôi
               </Link>
               {categories.map((cat) => (
                 <Link

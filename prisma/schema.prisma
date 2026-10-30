@@ -22,6 +22,7 @@ model User {
   phone     String?
   password  String
   role      Role     @default(USER)
+  orders    Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -75,15 +76,31 @@ model Order {
   customerEmail   String?
   customerAddress String      @db.Text
   totalAmount     Int         // Tổng tiền VND
-  status          String      @default("pending") // pending, confirmed, shipping, delivered, cancelled
+  status          String      @default("pending") // pending, confirmed, processing, shipping, delivered, cancelled
   paymentMethod   String      @default("cod") // cod, bank_transfer, momo
   paymentStatus   String      @default("unpaid") // unpaid, paid
+  paymentProof    String?     @db.LongText // Ảnh chứng từ / màn hình chuyển khoản
   notes           String?     @db.Text
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
   items           OrderItem[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
   @@map("orders")
+}
+
+model BankSetting {
+  id            String   @id @default("default")
+  bankName      String   @default("Ngân hàng Quân Đội (MB Bank)")
+  bankCode      String   @default("MB") // Hoặc mã BIN: 970422
+  accountNumber String   @default("0964001203")
+  accountHolder String   @default("TA NGOC DUONG")
+  isActive      Boolean  @default(true)
+  qrTemplate    String   @default("compact2") // compact, compact2, qr_only
+  updatedAt     DateTime @updatedAt
+
+  @@map("bank_settings")
 }
 
 model OrderItem {

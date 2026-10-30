@@ -39,6 +39,10 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  Image as ImageIcon,
+  CheckCircle2,
+  Clock,
+  CreditCard,
 } from "lucide-react";
 
 const statusMap: Record<
@@ -64,6 +68,7 @@ export default function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [viewProofModal, setViewProofModal] = useState<string | null>(null);
 
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,10 +84,12 @@ export default function AdminOrdersPage() {
           id: o.id,
           orderNumber: o.orderCode,
           customer: {
-            name: o.customerName,
+            fullName: o.customerName,
             phone: o.customerPhone,
             email: o.customerEmail || "",
             address: o.customerAddress,
+            ward: "",
+            district: "",
             city: "",
           },
           items: (o.items || []).map((it: any) => ({
@@ -90,6 +97,7 @@ export default function AdminOrdersPage() {
             productName: it.product?.name || "Cây thuốc thảo dược",
             price: it.price,
             quantity: it.quantity,
+            productImage: it.product?.images?.[0] || "",
           })),
           subtotal: o.totalAmount,
           shippingFee: 0,
@@ -97,8 +105,9 @@ export default function AdminOrdersPage() {
           status: o.status,
           paymentMethod: o.paymentMethod,
           paymentStatus: o.paymentStatus,
+          paymentProof: o.paymentProof,
           createdAt: o.createdAt,
-          notes: o.notes,
+          note: o.notes,
         }));
         setOrderList(mapped);
       } else {
@@ -125,9 +134,9 @@ export default function AdminOrdersPage() {
 
   const filteredOrders = orderList.filter((order) => {
     const matchSearch =
-      order.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
-      order.customer.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      order.customer.phone.includes(search);
+      (order.orderNumber || "").toLowerCase().includes(search.toLowerCase()) ||
+      (order.customer?.fullName || "").toLowerCase().includes(search.toLowerCase()) ||
+      (order.customer?.phone || "").includes(search);
     const matchStatus =
       statusFilter === "all" || order.status === statusFilter;
     return matchSearch && matchStatus;
@@ -154,6 +163,24 @@ export default function AdminOrdersPage() {
       setSelectedOrder((prev) =>
         prev ? { ...prev, status: newStatus } : null
       );
+    }
+  };
+
+  const updatePaymentStatus = async (orderId: string, paymentStatus: string) => {
+    try {
+      await fetch(`/api/orders/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentStatus }),
+      });
+      await fetchOrders();
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder((prev) =>
+          prev ? { ...prev, paymentStatus } : null
+        );
+      }
+    } catch (e) {
+      console.error("Lỗi cập nhật trạng thái thanh toán:", e);
     }
   };
 
@@ -227,7 +254,7 @@ export default function AdminOrdersPage() {
               <TableHead>Cây Thuốc Đặt</TableHead>
               <TableHead className="text-right">Tổng Tiền</TableHead>
               <TableHead className="text-center">Trạng Thái Đơn</TableHead>
-              <TableHead className="text-center">Thanh Toán</TableHead>
+              <TableHead className="text-center">Thanh Toán & Chứng Từ</TableHead>
               <TableHead className="text-right">Chi Tiết</TableHead>
             </TableRow>
           </TableHeader>
@@ -287,10 +314,23 @@ export default function AdminOrdersPage() {
                     </Select>
                   </TableCell>
                   <TableCell className="text-center text-xs">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100 text-stone-700 font-medium">
-                      {paymentMethodMap[order.paymentMethod]?.icon}{" "}
-                      {paymentMethodMap[order.paymentMethod]?.label}
-                    </span>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 font-medium text-[11px]">
+                        {paymentMethodMap[order.paymentMethod]?.icon}{" "}
+                        {paymentMethodMap[order.paymentMethod]?.label}
+                      </span>
+                      {order.paymentProof ? (
+                        <button
+                          onClick={() => setViewProofModal(order.paymentProof!)}
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-md transition-colors"
+                        >
+                          <ImageIcon className="h-3 w-3" />
+                          <span>Xem ảnh CK</span>
+                        </button>
+                      ) : order.paymentMethod === "bank_transfer" ? (
+                        <span className="text-[10px] text-amber-600">Chưa tải ảnh CK</span>
+                      ) : null}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -418,6 +458,65 @@ export default function AdminOrdersPage() {
                 )}
               </div>
 
+              {/* Payment Proof Screenshot Box */}
+              {selectedOrder.paymentProof && (
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                      <ImageIcon className="h-4 w-4 text-emerald-700" />
+                      Ảnh chụp màn hình chuyển khoản của khách hàng
+                    </p>
+                    <Badge
+                      className={
+                        selectedOrder.paymentStatus === "paid"
+                          ? "bg-emerald-600 text-white"
+                          : "bg-amber-100 text-amber-800"
+                      }
+                    >
+                      {selectedOrder.paymentStatus === "paid"
+                        ? "Đã xác nhận tiền vào TK"
+                        : "Chờ đối soát tiền"}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="cursor-pointer group relative rounded-xl overflow-hidden border border-emerald-300 w-32 h-32 bg-white shrink-0 shadow-xs"
+                      onClick={() => setViewProofModal(selectedOrder.paymentProof!)}
+                    >
+                      <img
+                        src={selectedOrder.paymentProof}
+                        alt="Chứng từ chuyển khoản"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-medium transition-opacity">
+                        Phóng to
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-xs">
+                      <p className="text-stone-600">
+                        Khách hàng đã gửi biên lai thanh toán. Vui lòng kiểm tra biến động số dư tài khoản ngân hàng trước khi xác nhận đơn.
+                      </p>
+                      {selectedOrder.paymentStatus !== "paid" ? (
+                        <Button
+                          size="sm"
+                          onClick={() => updatePaymentStatus(selectedOrder.id, "paid")}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 h-8 text-xs font-semibold"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Xác nhận đã nhận tiền (Khớp lệnh)
+                        </Button>
+                      ) : (
+                        <p className="text-emerald-700 font-semibold flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Đã xác nhận thanh toán thành công
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <Separator />
 
               {/* Ordered Herbs */}
@@ -489,8 +588,8 @@ export default function AdminOrdersPage() {
               </div>
 
               {/* Quick Status Bar */}
-              <div className="p-4 rounded-2xl bg-stone-100/70 border border-stone-200 flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-800">
+              <div className="p-4 rounded-2xl bg-stone-100/70 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span className="text-xs font-bold text-stone-800 shrink-0">
                   Cập nhật tiến độ:
                 </span>
                 <div className="flex gap-1.5 flex-wrap">
@@ -508,6 +607,35 @@ export default function AdminOrdersPage() {
                     </Button>
                   ))}
                 </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Proof Lightbox Modal */}
+      <Dialog open={!!viewProofModal} onOpenChange={() => setViewProofModal(null)}>
+        <DialogContent className="max-w-3xl p-4 bg-white rounded-2xl">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-base font-bold text-stone-900">
+              Ảnh Chứng Từ Chuyển Khoản
+            </DialogTitle>
+          </DialogHeader>
+          {viewProofModal && (
+            <div className="flex flex-col items-center justify-center p-2">
+              <img
+                src={viewProofModal}
+                alt="Chứng từ chuyển khoản đầy đủ"
+                className="max-h-[75vh] w-auto object-contain rounded-xl border shadow-md"
+              />
+              <div className="mt-3 flex justify-end w-full">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewProofModal(null)}
+                >
+                  Đóng
+                </Button>
               </div>
             </div>
           )}

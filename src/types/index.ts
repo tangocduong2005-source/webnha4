@@ -64,6 +64,8 @@ export interface Order {
   status: OrderStatus;
   paymentMethod: PaymentMethod;
   note?: string;
+  paymentProof?: string;
+  paymentStatus?: string;
   createdAt: string;
   updatedAt: string;
 }
