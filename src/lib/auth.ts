@@ -43,3 +43,4 @@ export function decodeSession(token: string): (AuthUser & { exp: number }) | nul
     return null;
   }
 }
+

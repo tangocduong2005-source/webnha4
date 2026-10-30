@@ -142,7 +142,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-white/40">
-          <p>© 2024 Cây Thuốc Ông Han. Tất cả quyền được bảo lưu.</p>
+          <p>© 2026 Cây Thuốc Ông Han - Được phát triển bởi Tạ Ngọc Dương</p>
         </div>
       </div>
     </footer>
