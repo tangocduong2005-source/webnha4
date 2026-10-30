@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { orders as initialOrders } from "@/data/orders";
 import { Order, OrderStatus } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -63,12 +64,20 @@ const paymentMethodMap: Record<string, { label: string; icon: string }> = {
   momo: { label: "Ví MoMo", icon: "👛" },
 };
 
-export default function AdminOrdersPage() {
+function AdminOrdersContent() {
+  const searchParams = useSearchParams();
+  const urlStatus = searchParams.get("status") || "all";
   const [orderList, setOrderList] = useState<Order[]>(initialOrders);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(urlStatus);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [viewProofModal, setViewProofModal] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (urlStatus) {
+      setStatusFilter(urlStatus);
+    }
+  }, [urlStatus]);
 
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -642,5 +651,13 @@ export default function AdminOrdersPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AdminOrdersPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-stone-500">Đang tải danh sách đơn hàng...</div>}>
+      <AdminOrdersContent />
+    </Suspense>
   );
 }

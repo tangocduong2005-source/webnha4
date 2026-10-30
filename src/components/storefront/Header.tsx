@@ -117,134 +117,189 @@ export default function Header() {
                 <Search className="h-5 w-5" />
               </Button>
 
-              {/* Cart */}
+              {/* Cart Button with Mini-Cart Sheet */}
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="icon"
-                    className="relative"
+                    className="relative h-11 px-3 sm:px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 rounded-xl flex items-center gap-2 sm:gap-2.5 transition-all shadow-xs group"
                     id="cart-button"
+                    aria-label="Xem giỏ hàng"
                   >
-                    <ShoppingCart className="h-5 w-5" />
-                    {totalItems > 0 && (
-                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-destructive text-white animate-scale-in">
-                        {totalItems}
-                      </Badge>
-                    )}
+                    <div className="relative flex items-center justify-center">
+                      <ShoppingCart className="h-5 w-5 text-emerald-700 group-hover:scale-110 transition-transform" />
+                      {totalItems > 0 && (
+                        <span className="absolute -top-2.5 -right-3 h-5 min-w-5 px-1 bg-gradient-to-r from-rose-500 to-amber-500 text-white font-extrabold text-[11px] rounded-full flex items-center justify-center ring-2 ring-white shadow-xs animate-scale-in">
+                          {totalItems}
+                        </span>
+                      )}
+                    </div>
+                    <div className="hidden sm:flex flex-col text-left leading-none gap-0.5">
+                      <span className="text-[10px] uppercase font-bold text-emerald-700 tracking-wider">
+                        Giỏ hàng
+                      </span>
+                      <span className="text-xs font-extrabold text-emerald-950 font-mono">
+                        {totalItems > 0 ? formatPrice(subtotal) : "0đ"}
+                      </span>
+                    </div>
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md">
-                  <SheetHeader>
-                    <SheetTitle className="font-heading text-xl">
-                      Giỏ hàng ({totalItems})
+
+                {/* Mini-Cart Drawer (Slide-out from Right) */}
+                <SheetContent className="w-full sm:max-w-md p-0 flex flex-col h-full bg-white">
+                  {/* Drawer Header */}
+                  <SheetHeader className="p-5 border-b border-stone-200 bg-stone-50/70">
+                    <SheetTitle className="font-heading text-lg font-bold text-stone-900 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                          <ShoppingCart className="h-4 w-4" />
+                        </div>
+                        <span>Giỏ Hàng Dược Liệu</span>
+                      </div>
+                      <Badge className="bg-emerald-600 text-white font-bold text-xs">
+                        {totalItems} món
+                      </Badge>
                     </SheetTitle>
                   </SheetHeader>
-                  <div className="mt-6 flex flex-col h-[calc(100vh-12rem)]">
-                    {state.items.length === 0 ? (
-                      <div className="flex-1 flex flex-col items-center justify-center text-center">
-                        <ShoppingCart className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                        <p className="text-muted-foreground">
-                          Giỏ hàng trống
+
+                  {/* Free Shipping Alert Bar */}
+                  <div className="bg-emerald-50/90 border-b border-emerald-100 px-5 py-2.5 text-xs text-emerald-900">
+                    {subtotal >= 300000 ? (
+                      <p className="font-semibold text-emerald-700 flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        ✓ Đơn của bạn đủ điều kiện <strong>Miễn Phí Vận Chuyển</strong> toàn quốc!
+                      </p>
+                    ) : (
+                      <div className="space-y-1">
+                        <p className="text-[11px] text-emerald-800">
+                          Mua thêm <strong>{formatPrice(300000 - subtotal)}</strong> để được <strong>Freeship</strong> đơn từ 300.000đ
                         </p>
+                        <div className="w-full bg-emerald-200/60 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="bg-emerald-600 h-full rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(100, (subtotal / 300000) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Drawer Body */}
+                  <div className="flex-1 overflow-y-auto p-5">
+                    {state.items.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12">
+                        <div className="h-20 w-20 rounded-full bg-emerald-50 text-emerald-400 flex items-center justify-center">
+                          <ShoppingCart className="h-10 w-10 stroke-[1.5]" />
+                        </div>
+                        <div>
+                          <p className="font-heading text-base font-bold text-stone-800">
+                            Giỏ hàng của bạn đang trống
+                          </p>
+                          <p className="text-xs text-stone-500 max-w-xs mt-1">
+                            Hãy lựa chọn các bài thuốc nam và cây dược liệu sạch chuẩn Đông Y cho bạn và gia đình.
+                          </p>
+                        </div>
                         <Link href="/products">
-                          <Button className="mt-4" variant="outline">
-                            Xem sản phẩm
+                          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs h-10 px-5 font-semibold">
+                            Khám Phá Cây Thuốc Ngay
                           </Button>
                         </Link>
                       </div>
                     ) : (
-                      <>
-                        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                          {state.items.map((item) => (
-                            <div
-                              key={item.product.id}
-                              className="flex gap-3 p-3 rounded-lg bg-accent/30"
-                            >
-                              <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden relative">
-                                {item.product.images?.[0] ? (
-                                  <img
-                                    src={item.product.images[0]}
-                                    alt={item.product.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <Leaf className="h-8 w-8 text-primary/40" />
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate">
-                                  {item.product.name}
-                                </h4>
-                                <p className="text-sm text-primary font-semibold">
-                                  {formatPrice(item.product.price)}
-                                </p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6"
+                      <div className="space-y-3.5">
+                        {state.items.map((item) => (
+                          <div
+                            key={item.product.id}
+                            className="flex gap-3 p-3 rounded-2xl bg-stone-50 border border-stone-200/80 hover:border-emerald-200 transition-all"
+                          >
+                            <div className="h-16 w-16 rounded-xl bg-white border border-stone-200 flex items-center justify-center shrink-0 overflow-hidden relative">
+                              {item.product.images?.[0] ? (
+                                <img
+                                  src={item.product.images[0]}
+                                  alt={item.product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Leaf className="h-6 w-6 text-emerald-600/40" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-xs sm:text-sm text-stone-900 truncate">
+                                {item.product.name}
+                              </h4>
+                              <p className="text-[11px] text-stone-500">
+                                {item.product.weight || "Gói chuẩn"} • {formatPrice(item.product.price)}
+                              </p>
+
+                              <div className="flex items-center justify-between mt-2">
+                                <div className="flex items-center border border-stone-200 rounded-lg bg-white shadow-2xs">
+                                  <button
+                                    type="button"
+                                    className="h-6 w-6 flex items-center justify-center text-xs text-stone-600 hover:bg-stone-100 rounded-l-lg"
                                     onClick={() =>
-                                      updateQuantity(
-                                        item.product.id,
-                                        item.quantity - 1
-                                      )
+                                      updateQuantity(item.product.id, item.quantity - 1)
                                     }
                                   >
                                     -
-                                  </Button>
-                                  <span className="text-sm w-6 text-center">
+                                  </button>
+                                  <span className="text-xs font-bold w-6 text-center text-stone-900">
                                     {item.quantity}
                                   </span>
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6"
+                                  <button
+                                    type="button"
+                                    className="h-6 w-6 flex items-center justify-center text-xs text-stone-600 hover:bg-stone-100 rounded-r-lg"
                                     onClick={() =>
-                                      updateQuantity(
-                                        item.product.id,
-                                        item.quantity + 1
-                                      )
+                                      updateQuantity(item.product.id, item.quantity + 1)
                                     }
                                   >
                                     +
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6 ml-auto text-destructive hover:text-destructive"
-                                    onClick={() =>
-                                      removeFromCart(item.product.id)
-                                    }
-                                  >
-                                    <X className="h-3.5 w-3.5" />
-                                  </Button>
+                                  </button>
                                 </div>
+
+                                <span className="font-extrabold text-xs text-emerald-800">
+                                  {formatPrice(item.product.price * item.quantity)}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  className="h-6 w-6 text-stone-400 hover:text-rose-500 flex items-center justify-center transition-colors"
+                                  onClick={() => removeFromCart(item.product.id)}
+                                  title="Xóa món này"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                        <div className="border-t pt-4 mt-4 space-y-3">
-                          <div className="flex justify-between font-semibold text-lg">
-                            <span>Tạm tính:</span>
-                            <span className="text-primary">
-                              {formatPrice(subtotal)}
-                            </span>
                           </div>
-                          <Link href="/cart" className="block">
-                            <Button variant="outline" className="w-full">
-                              Xem giỏ hàng
-                            </Button>
-                          </Link>
-                          <Link href="/checkout" className="block">
-                            <Button className="w-full bg-primary hover:bg-primary/90">
-                              Thanh toán
-                            </Button>
-                          </Link>
-                        </div>
-                      </>
+                        ))}
+                      </div>
                     )}
                   </div>
+
+                  {/* Drawer Footer */}
+                  {state.items.length > 0 && (
+                    <div className="p-5 border-t border-stone-200 bg-stone-50/80 space-y-3">
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-xs text-stone-500 font-medium">Tổng tiền dược liệu:</span>
+                        <span className="font-heading font-extrabold text-xl text-emerald-900">
+                          {formatPrice(subtotal)}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <Link href="/cart" className="block">
+                          <Button variant="outline" className="w-full h-11 rounded-xl text-xs font-semibold border-stone-300 hover:bg-white text-stone-800">
+                            Xem Giỏ Hàng
+                          </Button>
+                        </Link>
+                        <Link href="/checkout" className="block">
+                          <Button className="w-full h-11 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md">
+                            Thanh Toán Ngay
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </SheetContent>
               </Sheet>
 
@@ -397,6 +452,31 @@ export default function Header() {
                 Quản trị
               </Link>
             </div>
+          </div>
+        )}
+        {/* Floating Quick Cart Bar for Mobile */}
+        {totalItems > 0 && (
+          <div className="md:hidden fixed bottom-5 left-4 right-20 z-40 animate-slide-up">
+            <Link
+              href="/checkout"
+              className="flex items-center justify-between bg-emerald-900/95 backdrop-blur-md text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-emerald-600/60 active:scale-95 transition-transform"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="relative">
+                  <ShoppingCart className="h-5 w-5 text-emerald-300" />
+                  <span className="absolute -top-2 -right-2.5 h-4 min-w-4 px-1 bg-rose-500 text-[10px] font-extrabold rounded-full flex items-center justify-center ring-1 ring-white">
+                    {totalItems}
+                  </span>
+                </div>
+                <div className="text-left leading-tight">
+                  <p className="text-[10px] text-emerald-300 font-semibold uppercase">Giỏ hàng</p>
+                  <p className="text-xs font-bold font-mono text-emerald-100">{formatPrice(subtotal)}</p>
+                </div>
+              </div>
+              <span className="text-xs font-bold bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-xl shadow-xs">
+                Thanh toán →
+              </span>
+            </Link>
           </div>
         )}
       </div>
